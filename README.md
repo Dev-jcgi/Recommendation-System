@@ -1,8 +1,8 @@
-# Improve business strategy and increase profitability
+# Creating a Machine Learning-Based Recommendation System
 
 ---
 
-![Logo](./img/intro.jpg)
+![Logo](https://raw.githubusercontent.com/sarahekim53/sarahekim53.github.io/master/images/net.png)
 
 ---
 
@@ -11,586 +11,498 @@
 
 ---
 
-## Date: May, 2024
+## Date: February, 2024
 
 ---
 
 ## Content
+1. Data Cleaning
+2. Visualization and Analysis
 
-1. Objective
-2. Description of the data
-3. Exploratory analysis
-4. Development
-5. Results
-6. Conclusion
-7. References
+-2.1 Movies and shows by released years
+2.2 Countries with the most movies/shows
+2.3 Casts with the most movies/shows
+2.4 Movie Ratings
+2.5 Movie Ratings in IMDb
+2.6 Duration of Movies
+2.7 Oldest/Newest Shows
+2.8 Word Cloud
+
+3. Machine Learning: Recommendation System
+4. Conclusion
 
 ---
 
-# 1. Project Objective
-The objective is to analyze the data and obtain valuable information that allows the company to improve its sales strategy and increase its profitability.
+# Project Objective
+Netflix's goal in creating a machine learning-based recommendation system is to maximize user engagement by delivering personalized content. The objective is to present each user with movies, TV shows, or documentaries they are most likely to enjoy, based on their preferences and past behaviors. This system is crucial for maintaining and growing Netflix's subscriber base by keeping users engaged for longer periods and reducing churn.
 
-# 2. Description of the data
+# Description of the method
 
-This project has an Instacart Market Basket Analysis dataset, which is contained in several CSV files. 
+Objectives of Netflix’s Recommendation System:
+Maximizing User Satisfaction: Deliver personalized content that users are highly likely to enjoy to increase engagement and reduce churn.
 
-<small> The information contained in the CSV files is as follows:
+Improving Content Discovery: Help users discover new shows or movies they may not have searched for but would enjoy, encouraging deeper exploration of Netflix's catalog.
 
-• **orders.csv** : Contains information on orders placed by users.
-Each row represents an order and contains the following information:
-- **order_id** : Order ID.
-- **user_id** : ID of the user who placed the order.
-- **order_number**: Order number for each user (1 = first order, 2 =
-second order, etc.).
-- **order_dow** : Day of the week the order was placed.
-- **order_hour_of_day** : Time of day the order was placed.
-- **days_since_prior_order** : Days elapsed since the last order of the
-user.
+Enhancing Retention: By continuously delivering relevant content, Netflix aims to reduce churn by making the platform indispensable to its users.
 
-• **order_products__prior.csv**: Contains information on products purchased from
-every order. Each row represents a product in an order and contains the
-following information:
-- **order_id** : Order ID.
-- **product_id** : ID of the purchased product.
-- **add_to_cart_order** : Order in which the product was added to the cart in the
-time of order.
-- **reordered** : Indicates whether the product has been ordered by the user
-formerly.
+Optimizing for Long-Term Value: Rather than just focusing on short-term engagement, Netflix’s system aims to build long-term user loyalty by catering to evolving tastes and habits.
 
-• **products.csv** : Contains information about the products sold in the store. Every
-row represents a product and contains the following information:
-- **product_id** : Product ID.
-- **product_name** : Name of the product.
-- **aisle_id**: ID of the aisle where the product is located.
-- **department_id** : ID of the department to which the product belongs.
+Methods Employed in the Recommendation System:
+Netflix uses a combination of collaborative filtering, content-based filtering, and hybrid approaches to generate its recommendations.
 
-• **aisles.csv** : Contains information from the store aisles. Each row represents
-a hallway and contains the following information:
-- **aisle_id** : Hallway ID.
-- **aisle** : Name of the corridor.
-
-• **departments.csv** : Contains information about the store's departments. Every
-Row represents a department and contains the following information:
-- **department_id** : Department ID.
-- **department** : Name of the department.    
-
-</small>
-
-Entity Relationship Diagram
-<p>
-<img src="img/Proyecto_Final.png" width="600" height="400">
-</p>
-
-# 3. Exploratory analysis
-
-In exploratory analysis files are analyzed with the information provided in the previous section, the purpose is to analyze and investigate the datasets, summarize their main characteristics, detect anomalies, identify relationships, eliminate irrelevant variables, impute missing values, and clean up product names.
-
-The tasks to be carried out are defined: 
-
-1. Perform exploratory analysis of the data to understand the distribution of orders, the number of products per order, and the frequency of purchases per day and hour. 
-2. Identify the best-selling products in the store and visualize the results using a bar graph. 
-3. Identify the most purchased products in each department and visualize the results using a bar graph. 
-4. Identify the products that are most purchased together, i.e. those that appear in the same orders most frequently, and visualize the results using a network graph. 
-
-Based on the tasks defined and the exploratory analysis, the following actions will be carried out:
-
-- **Do not use the isolated table**.
-
-- Remove the following attributes:
-- - **eval_set** in the **orders** table: This attribute indicates which dataset (training, test, etc.) each order belongs to, but is not used in this analysis.
-- - **days_since_prior_order** in the **orders** table: This attribute indicates how many days have passed since the last order of the same user, but is not used in this analysis.
-- - **aisolate** from the **products** table: This attribute indicates the aisle in which each product is located, but is not used in this analysis.
-- - **reordered** in the **order_products** table: This attribute indicates whether the product was reordered by the same user, but is not used in this analysis.
-
-- Impute missing values and clean up product names.
-
-- Blank spaces after the product name will be removed.
-
-- The product name is going to be converted to lowercase.
-
-# 4. Development
-
-For the development, each task will be worked on as follows:
-1. Pre-process the data by removing irrelevant variables, imputing missing values, and cleaning up product names.
-2. Perform an exploratory analysis of the data to understand the distribution of orders.
-- Display of the number of products per order
-- Display frequency of purchases per day
-- Display frequency of purchases per hour.
-3. Identify the best-selling products in the store and visualize the results using a bar chart.
-4. Identify the most purchased products in each department and visualize the results using a bar graph.
-5. Identify the products that are most purchased together, i.e. those that appear in the same orders most frequently, and visualize the results using a network graph.
-
-## 4.1. Pre-process data by removing irrelevant variables, imputing missing values, and clearing product names.
-
-- Install and Import Modules
+## 1. Data Cleaning
 
 ```python
-!pip install pandas
-!pip install matplotlib
-!pip install networkx
-#Importar módulos
-#Modulo para procesamiento de datos
 import pandas as pd
-#Modulo para visualizacion de datos
+import numpy as np
+pd.set_option('display.max_columns', None)
+pd.set_option('display.max_rows', 100)
+import plotly.express as px
+import plotly.graph_objects as go
 import matplotlib.pyplot as plt
-#Modulo para visualizar los resultados utilizando un gráfico de red
-import networkx as nx
-from itertools import combinations
 from collections import Counter
+from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 
 ```
 
-- Load the data
 
 ```python
-df_department = pd.read_csv('data/departments.csv')
-df_orders = pd.read_csv('data/orders.csv')
-df_products = pd.read_csv('data/products.csv')
-df_order_products = pd.read_csv('data/order_products__prior.csv')
+netflix = pd.read_csv('netflix.csv')
 
 ```
 
-- Remove irrelevant variables
-
 ```python
-df_department = pd.read_csv('data/departments.csv')
-df_orders = pd.read_csv('data/orders.csv')
-df_products = pd.read_csv('data/products.csv')
-df_order_products = pd.read_csv('data/order_products__prior.csv')
+netflix.head(2)
 
 ```
-- Merge the tables
+<img src="img/0.png" width="600" height="400">
 
 ```python
-data = df_orders.merge(df_order_products, on="order_id").merge(df_products, on="product_id").merge(df_department, on="department_id")
+netflix.shape
 
 ```
 
-- Input missing values and clear product names.
-- Check if there are null or missing values
-- Check for duplicate or misspelled product names
-- White spaces will be removed after the product name
-- The product name will be converted to lowercase
-- Correct product names (if necessary)
-- Check for duplicate or misspelled product names
 
 ```python
-valor_imputar = data.isnull().sum()
-print(valor_imputar)
-
-valor_duplicados = data['product_name'].value_counts()
-print(valor_duplicados)
-
-data['product_name'] = data['product_name'].str.strip()  
-data['product_name'] = data['product_name'].str.lower() 
-
-valor_duplicados = data['product_name'].value_counts()
-print(valor_duplicados)
+netflix.describe()
 
 ```
 
----
+<img src="img/1.png" width="600" height="400">
 
-# 4.1 DAE files are executed for Python tests with Pandas
-
-## 4.2 Perform an exploratory analysis of the data to understand the distribution of orders.
-- Viewing quantity of products per order.
-- Viewing purchase frequency per day.
-- Viewing purchase frequency by hour.
-
----
-
----
-### 4.2.1 Display quantity of products per order
-
-Number of products per order
 
 ```python
-prod_x_order = data.groupby('order_id')['product_id'].count()
+netflix.columns
+
+```
+<img src="img/2.png" width="600" height="400">
+
+
+```python
+netflix.dtypes
+
 ```
 
-Graph of the quantity of products per order
+<img src="img/3.png" width="600" height="400">
+
+**Let's delete columns such as showid, description as we have index and do not need descriptions.**
+
 
 ```python
-plt.figure(figsize=(10.6))
-plt.hist(prod_x_orden, bins=30, edgecolor='black', color='skyblue')
-plt.title('Distribution of quantity of products per order')
-plt.xlabel('Number of products')
-plt.ylabel('Number of orders')
+netflix.drop(columns=['show_id'], inplace=True)
+
+```
+<img src="img/4.png" width="600" height="400">
+
+**Then change data type for date added for the future use.**
+
+
+```python
+netflix['date_added'] = pd.to_datetime(netflix['date_added'])
+movies = netflix.loc[netflix['type'] == 'Movie']
+shows = netflix.loc[netflix['type'] == 'TV Show']
+
+movies.drop(columns=['type'], inplace=True)
+shows.drop(columns=['type'], inplace=True)
+
+movies.reset_index(drop=True, inplace=True)
+shows.reset_index(drop=True, inplace=True)
+
+movies['duration'] = movies['duration'].str.replace('min', '')
+movies['duration'] = movies['duration'].astype(int)
+
+movies.head(2)
+```
+
+<img src="img/5.png" width="600" height="400">
+
+
+```python
+shows.head(2)
+
+```
+
+<img src="img/6.png" width="600" height="400">
+
+## 2. Visualization
+
+1. Movies and Shows by Release Year and Added Date
+
+a. Movies and shows by release year
+
+```python
+movies_release_year = movies.groupby('release_year').count()['title'].to_frame()\
+                .reset_index().rename(columns={'release_year':'Release Year', 'title':'Count'})
+shows_release_year = shows.groupby('release_year').count()['title'].to_frame()\
+                .reset_index().rename(columns={'release_year':'Release Year', 'title':'Count'})
+
+fig = go.Figure()
+
+fig.add_trace(go.Scatter(x=movies_release_year['Release Year'], y=movies_release_year['Count'],
+                    mode='lines',
+                    name='Movies'))
+fig.add_trace(go.Scatter(x=shows_release_year['Release Year'], y=shows_release_year['Count'],
+                    mode='lines',
+                    name='Shows'))
+
+fig.update_layout(template='none', title='Movies and Shows by Release Year',
+                 width=950, height=500)
+fig.update_yaxes(showgrid=False)
+fig.update_xaxes(showgrid=False)
+
+fig.show()
+
+```
+
+<img src="img/7.png" width="600" height="400">
+
+
+
+**Netflix carries most of the shows and movies released in 2000 to 2020. There is much less movies earlier than 1980.**
+
+b. Movies and shows by added date
+
+
+```python
+
+
+movies['date_added'] = pd.to_datetime(movies['date_added'], errors='coerce').dt.strftime('%Y-%m')
+shows['date_added'] = pd.to_datetime(shows['date_added'], errors='coerce').dt.strftime('%Y-%m')
+
+movies_date_added = movies.groupby('date_added').count()['title']\
+            .to_frame().reset_index().rename(columns = {'date_added':'Date Added', 'title':'Count'})
+shows_date_added = shows.groupby('date_added').count()['title']\
+            .to_frame().reset_index().rename(columns = {'date_added':'Date Added', 'title':'Count'})
+
+fig = go.Figure()
+
+fig.add_trace(go.Scatter(x=movies_date_added['Date Added'], y=movies_date_added['Count'],
+                    mode='lines',
+                    name='Movies'))
+fig.add_trace(go.Scatter(x=shows_date_added['Date Added'], y=shows_date_added['Count'],
+                    mode='lines',
+                    name='Shows'))
+
+fig.update_layout(template='none', title='Movies and Shows by Added Date',
+                 width=950, height=500)
+fig.update_yaxes(showgrid=False)
+fig.update_xaxes(showgrid=False)
+
+fig.show()
+
+```
+
+<img src="img/8.png" width="600" height="400">
+
+**Netflix added a lot of shows and movies from 2016. According to Netflix, it started streaming from 2007.**
+
+2. Countries with the Most Movies and Shows
+
+
+```python
+
+
+netflix_country = netflix['country'].str.split(', ').explode()\
+                .value_counts()[:15].to_frame().reset_index().rename(columns={'index':'Country', 'country':'Count'})
+
+fig = px.scatter_geo(netflix_country, locations="Country", color="Count",
+                     locationmode='country names', size_max=50,
+                     hover_name="Country", size="Count",
+                     projection="natural earth", color_continuous_scale=px.colors.diverging.BrBG,
+                     title='Top 15 Countries with the Most Movies and Shows on Netflix')
+fig.show()
+
+
+```
+
+<img src="img/9.png" width="600" height="400">
+
+a. Countries with the most movies
+
+```python
+movies_country = movies['country'].str.split(', ').explode().value_counts()[:15]\
+            .to_frame().reset_index().rename(columns={'index':'Country', 'country':'Number of Movies'})
+
+fig = px.scatter_geo(movies_country, locations="Country", color="Number of Movies",
+                     locationmode='country names', size_max=50,
+                     hover_name="Country", size="Number of Movies",
+                     projection="natural earth", color_continuous_scale=px.colors.diverging.BrBG,
+                     title='Top 15 Countries with the Most Movies on Netflix')
+
+
+fig.show()
+
+```
+
+<img src="img/10.png" width="600" height="400">
+
+b. Countries with the most shows
+
+```python
+
+
+shows_country = shows['country'].str.split(', ').explode().value_counts()[:15]\
+            .to_frame().reset_index().rename(columns={'index':'Country', 'country':'Number of Shows'})
+
+fig = px.scatter_geo(shows_country, locations="Country", color="Number of Shows",
+                     locationmode='country names', size_max=50,
+                     hover_name="Country", size="Number of Shows",
+                     projection="natural earth", color_continuous_scale=px.colors.diverging.BrBG,
+                     title='Top 15 Countries with the Most Shows on Netflix')
+fig.show()
+
+```
+
+<img src="img/11.png" width="600" height="400">
+
+**United States has the most shows and movies on Netflix, but also, Indian has the second most movies and shows, which I did not expect.**
+
+3. Casts with the Most Movies and Shows on Netflix
+
+a. Casts with the most movies
+
+```python
+
+
+movies_casts = movies['cast'].str.split(', ').explode().value_counts()[:10]\
+            .to_frame().reset_index().rename(columns={'index':'Cast', 'cast':'Number of Movies'})
+
+fig = px.bar(movies_casts, x="Number of Movies", y="Cast", color='Cast', orientation='h',
+            template='none', width=900, height=400, color_discrete_sequence=px.colors.qualitative.Vivid,
+            title='Top 15 Countries with the Most Movies on Netflix')
+fig.update_layout(yaxis={'categoryorder':'total ascending'},
+                  margin=dict(l=130, r=10, t=100))
+fig.update_xaxes(showgrid=False)
+fig.update_yaxes(showticklabels=True, title_text=None)
+fig.show()
+
+```
+
+<img src="img/12.png" width="600" height="400">
+
+
+b. Casts with the most shows¶
+
+
+```python
+
+
+shows_casts = shows['cast'].str.split(', ').explode().value_counts()[:10]\
+            .to_frame().reset_index().rename(columns={'index':'Cast', 'cast':'Number of Shows'})
+
+fig = px.bar(shows_casts, x="Number of Shows", y="Cast", color='Cast', orientation='h',
+            template='none', width=900, height=400, color_discrete_sequence=px.colors.qualitative.Vivid,
+            title='Top 15 Countries with the Most Shows on Netflix')
+fig.update_layout(yaxis={'categoryorder':'total ascending'},
+                 margin=dict(l=130, r=10, t=100))
+fig.update_xaxes(showgrid=False)
+fig.update_yaxes(showticklabels=True, title_text=None)
+fig.show()
+
+```
+
+<img src="img/13.png" width="600" height="400">
+
+**Although United States has the most shows and movies on Netflix, the cast with the most movies is Indian. Unlike U.S., it seems like there is less diversities in Indian movie industry. Additionally, the cast with the most shows is Japanese.**
+
+4. Moving Ratings
+
+```python
+movie_ratings = movies.groupby('rating').count()['title'].sort_values(ascending=False)\
+                .to_frame().reset_index().rename(columns = {'rating':'Rating', 'title':'Count'})
+
+fig = px.pie(movie_ratings, values='Count', names='Rating', title='Netflix Movie Ratings',
+            color_discrete_sequence=px.colors.sequential.RdBu)
+fig.show()
+```
+
+<img src="img/14.png" width="600" height="400">
+
+**TV-MA and TV-14 is the most common ratings on Netflix.**
+
+5. Best Rated Movies in Netflix using IMDb Ratings
+
+```python
+
+
+ratings = pd.read_csv('IMDb ratings.csv', usecols=['weighted_average_vote'])
+movie_ratings = pd.read_csv('IMDb movies.csv', usecols=['title', 'year', 'genre'])
+imdb = pd.DataFrame({'title':movie_ratings.title, 'release_year':movie_ratings.year,
+                    'rating':ratings.weighted_average_vote, 'listed_in':movie_ratings.genre})
+imdb.drop_duplicates(subset=['title','release_year','rating'], inplace=True)
+
+
+
+movies_rated = movies.merge(imdb, on='title', how='inner')
+movies_rated.drop(columns=['release_year_y', 'listed_in_y'], inplace=True)
+
+
+
+movies_rated = movies_rated.rename(columns={'title': 'Title', 'director': 'Director', 'cast': 'Cast',
+                             'date_added': 'Date Added', 'release_year_x': 'Release Year', 'country': 'Country',
+                             'rating_x': 'TV Rating', 'duration': 'Duration',
+                             'listed_in_x': 'Genre', 'rating_y':'Rating'})
+top_10 = movies_rated.sort_values(by='Rating', ascending=False)[:10]
+
+fig = px.sunburst(top_10, path=['Title','Country'], values='Rating', color='Rating',
+                  color_continuous_scale='YlGn', title='Highst Rated Movies on Netflix in Each Countries',
+                  hover_data=['Title', 'Country', 'Rating'])
+
+fig.update_traces(hovertemplate='Title: %{customdata[0]} <br>Country: %{customdata[1]} <br>Rating: %{customdata[2]}')
+fig.update_layout(legend_title_text='Rating')
+fig.show()
+
+```
+
+<img src="img/15.png" width="600" height="400">
+
+6. Duration of Movies
+
+
+```python
+fig = px.histogram(movies, x='duration', nbins=22, template='none', 
+                   title='Netflix Movie Duration')
+fig.update_yaxes(showgrid=False)
+
+fig.show()
+```
+
+<img src="img/16.png" width="600" height="400">
+
+**The most common durations for movies is from 80 to 90 minutes, but also it is common if the movies is a bit longer than that.**
+
+7. Oldest/Newest Shows
+
+```python
+us_shows = shows.loc[shows['country'] == 'United States']
+us_shows_old = us_shows.sort_values(by='release_year')[:15]
+us_shows_new = us_shows.sort_values(by='release_year', ascending=False)[:15]
+
+fig = go.Figure(data=[go.Table(header=dict(values=['Title', 'Release Year'], 
+                                           fill_color='paleturquoise'), 
+                               cells=dict(values=[us_shows_old['title'], us_shows_old['release_year']], 
+                                          fill_color='lavender'))])
+fig.update_layout(title='Oldest American Shows on Netflix')
+fig.show()
+
+```
+
+<img src="img/17.png" width="600" height="400">
+
+
+```python
+fig = go.Figure(data=[go.Table(header=dict(values=['Title', 'Release Year'], 
+                                           fill_color='paleturquoise'), 
+                               cells=dict(values=[us_shows_new['title'], us_shows_new['release_year']], 
+                                          fill_color='lavenderblush'))])
+fig.update_layout(title='Newest American Shows on Netflix')
+fig.show()
+
+```
+
+<img src="img/18.png" width="600" height="400">
+
+
+8. Word Cloud
+
+```python
+
+
+genres = list(movies['listed_in'])
+genre = []
+
+for i in genres:
+    i = list(i.split(','))
+    for j in i:
+        genre.append(j.replace(' ', ''))
+gen = Counter(genre)
+
+
+text = list(set(genre))
+plt.rcParams['figure.figsize'] = (15, 10)
+wordcloud = WordCloud(max_font_size=50, max_words=50,background_color="white").generate(str(text))
+
+plt.imshow(wordcloud, interpolation="bilinear")
+plt.axis("off")
 plt.show()
+
 ```
+<img src="img/19.png" width="600" height="400">
 
----
 
----
 
-### 4.2.2 Viewing purchase frequency per day.
-Convert the numeric data type to a string to identify days by name 
+**The most popular genre on Netflix are independent movie, thriller, standup comedy and classic movies. Also Children movies are quite popular, too.**
+
+3. Machine Learning
+
+- Recommendation System
+
+I decided to learn about it. (by: Niharika Pandit https://www.kaggle.com/niharika41298/netflix-visualizations-recommendation-eda)
+
 
 ```python
-dow_dict = {
-    0: 'Sunday',
-    1: 'Monday',
-    2: 'Tuesday',
-    3: 'Wednesday',
-    4: 'Thursday',
-    5: 'Friday',
-    6: 'Saturday'
-}
+from sklearn.feature_extraction.text import TfidfVectorizer
 
-#Use the map method to replace numbers with day names
-data['order_dow'] = data['order_dow'].map(dow_dict)
-
-#Order chart by day of the week
-#Order chart by day of the week
-order_x_dia = data['order_dow'].value_counts().loc[dow_dict.values()]
-order_x_dia.plot.bar(figsize=(10.6), edgecolor='black', color='skyblue')
-plt.title('Frequency of purchases per day of the week')
-plt.xlabel('Day of the week')
-plt.ylabel('Number of orders')
-plt.show()
+tfidf = TfidfVectorizer(stop_words='english')
+netflix['description'] = netflix['description'].fillna('')
+tfidf_matrix = tfidf.fit_transform(netflix['description'])
+tfidf_matrix.shape
 
 ```
----
 
----
+<img src="img/20.png" width="600" height="400">
 
-### 4.2.3 Viewing purchase frequency by hour.
 
-Convert the numeric data type to a string to identify times in am or pm. 
+
+**There is over 16,000 words describe about 6,000 movies.**
+
 
 ```python
-# Orders by time of day
-dow_dict = {
-    0: '12:00 am',
-    1: '1:00 am',
-    2: '2:00 am',
-    3: '3:00 am',
-    4: '4:00 am',
-    5: '5:00 am',
-    6: '6:00 am',
-    7: '7:00 am',
-    8: '8:00 am',
-    9: '9:00 am',
-    10: '10:00 am',
-    11: '11:00 am',
-    12: '12:00 pm',
-    13: '1:00 pm',
-    14: '2:00 pm',
-    15: '3:00 pm',
-    16: '4:00 pm',
-    17: '5:00 pm',
-    18: '6:00 pm',
-    19: '7:00 pm',
-    20: '8:00 pm',
-    21: '9:00 pm',
-    22: '10:00 pm',
-    23: '11:00 pm'
-}
 
-# Use the map method to replace numbers with day names
-data['order_hour_of_day'] = data['order_hour_of_day'].map(dow_dict)
-order_x_hour = data['order_hour_of_day'].value_counts().loc[dow_dict.values()]
 
-# Order chart by time of day
-order_x_hour.plot.bar(figsize=(10.6), edgecolor='black', color='skyblue')
-plt.title('Frequency of purchases per hour of the day')
-plt.xlabel('Time of day')
-plt.ylabel('Number of orders')
-plt.xticks(range(24))
-plt.show()
+from sklearn.metrics.pairwise import linear_kernel
+cosine_similarity = linear_kernel(tfidf_matrix, tfidf_matrix)
+indices = pd.Series(netflix.index, index=netflix['title']).drop_duplicates()
+
+
+
+def get_recommendations(title, cosine_sim=cosine_similarity):
+    idx = indices[title]
+    sim_scores = list(enumerate(cosine_sim[idx]))
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+    sim_scores = sim_scores[1:11]
+
+    movie_indices = [i[0] for i in sim_scores]
+
+    return netflix['title'].iloc[movie_indices]
+
+get_recommendations('Jane The Virgin')
 
 ```
 
----
-## 4.3. Identify the best-selling products in the store and view the results using a bar graph.
+<img src="img/21.png" width="600" height="400">
 
-```python
-#Get the relationship between product number and product name
-prod_name = data[['product_id', 'product_name']]
-#Count the quantity of each product sold
-cant_prod = nombre_prod['product_name'].value_counts()
-#Get the names of the 5 best-selling products
-top_prod = cant_prod.head(5)
 
+## 4. Conclusion
 
-# Chart of best-selling products
-top_prod.plot(kind='barh', edgecolor='black', color='skyblue')
-# Add tags and title
-plt.xlabel('Number of times sold')
-plt.ylabel('Product name')
-plt.title('The 5 best-selling products')
-plt.gca().invert_yaxis()  
-# Reverse the y-axis so that the best-selling product is at the top
-plt.show()
-
-```
-
----
-
----
-
-## 4.4. Identify the most purchased products in each department and view the results using a bar graph.
-
-```python
-# Best-selling product by department
-top_prod_x_dep = data.groupby('department')['product_name'].value_counts().groupby(level=0).nlargest(1)
-# Reset the first index level
-top_prod_x_dep = top_prod_x_dep.reset_index(level=0, drop=True)
-
-
-
-# Create the bar chart
-plt.figure(figsize=(10,10))
-top_prod_x_dep.plot(kind='barh', edgecolor='black', color='skyblue')
-# Configure the axes and title
-plt.title('Most purchased product by department')
-plt.xlabel('Number of orders')
-plt.ylabel('Department /Order')
-# Reverse the y axis so that the department with the best-selling product is at the top
-plt.gca().invert_yaxis()
-plt.show()
-
-```
-
----
-
----
-
-## 4.5. Identify the products that are purchased the most together, that is, those that appear in the same orders most frequently, and visualize the results using a network graph.
-
-```python
-#Group data by 'order_id' and get the list of products in each order
-order_prod = data.groupby('order_id')['product_name'].apply(list)
-
-#Generate all possible product combinations in each order and count the frequency of each combination
-comb_prod = Counter()
-
-for products in order_prod:
-    comb_prod.update(combinations(products, 2))
-
-# Get the 5 most common product combinations
-top_comb_prod = comb_prod.most_common(5)
-
-
-# We create a graph
-G = nx.Graph()
-
-# We add nodes (products) and edges (connections between products) to the graph
-for (p1, p2), count in top_comb_prod:
-    G.add_node(p1)
-    G.add_node(p2)
-    G.add_edge(p1, p2, weight=count)
-
-# We draw the graph
-plt.figure(figsize=(10,10))
-pos = nx.spring_layout(G)
-nx.draw(G, pos, with_labels=True, node_color='skyblue', node_size=2000, font_size=10)
-labels = nx.get_edge_attributes(G, 'weight')
-nx.draw_networkx_edge_labels(G, pos, edge_labels=labels)
-plt.title('The 5 most purchased products together')
-plt.show()
-
-
-
-```
----
-
----
-## 4.6. Use Spark to perform parallel data analysis and obtain the frequency of purchases by day and hour. 
-
-```python
-#Installation of modules
-!pip install pyspark
-
-#Import modules
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, count
-
-# Create a Spark session
-spark = SparkSession.builder.appName("Project_Evaluation").getOrCreate()
-
-# Upload data to Spark DataFrames
-df_department = spark.read.csv('data/departments.csv', header=True, inferSchema=True)
-df_order_products = spark.read.csv('data/order_products__prior.csv', header=True, inferSchema=True)
-df_orders = spark.read.csv('data/orders.csv', header=True, inferSchema=True)
-df_products = spark.read.csv('data/products.csv', header=True, inferSchema=True)
-
-#Delete attributes
-df_orders = df_orders.drop('eval_set')
-df_orders = df_orders.drop('days_since_prior_order')
-df_products = df_products.drop('aisle_id')
-df_order_products = df_order_products.drop('reordered')
-
-
-#Unite the data
-data = df_orders.join(df_order_products, "order_id").join(df_products, "product_id").join(df_department, "department_id")
-
-
-# Calculate the frequency of purchases per day
-order_x_dia_sp = data.groupBy('order_dow').count().orderBy('count', ascending=False)
-order_x_dia_pd = order_x_dia_sp.toPands()
-order_x_dia_pd.set_index('order_dow', inplace=True)
-
-
-# View the frequency of purchases per day
-order_x_dia_pd.plot(kind='bar', title='Frequency of purchases per day of the week', edgecolor='black', color='skyblue')
-plt.xlabel('Day of the week')
-plt.ylabel('Number of orders')
-plt.show()
-
-# Calculate the frequency of purchases per hour
-order_x_hour_sp = data.groupBy('order_hour_of_day').count().orderBy('count', ascending=False)
-order_x_hour_pd = order_x_hour_sp.toPands()
-order_x_hour_pd.set_index('order_hour_of_day', inplace=True)
-
-# View the frequency of purchases per hour
-order_x_hour_pd.plot(kind='bar', edgecolor='black', color='skyblue')
-plt.title('Frequency of purchases per hour of the day')
-plt.xlabel('Time of day')
-plt.ylabel('Number of orders')
-plt.xticks(range(24))
-plt.show()
-
-```
-
-**I tried to implement day and time dictionaries like in pandas, but I was not successful**
-
----
-
-
----
-
-## ADESpark files are executed for Spark tests
-
-# 5. Results
-
-For analysis requests in Pandas implement the ADE.ipynb file.
-For scan requests in Spark, deploy the ADESpark.ipynb file to:
-
-### **Python efficiency evaluation with Pandas.**
-#### **Tests were carried out on:**
-
-| Operating System | Runtime | CPU Usage | Memory Usage |
-|-------------------|---------------------|---------------|----------------|
-| Windows 10 | 112.2 seconds | 26.8% | 40.4% |
-| macOS Catalina | 153.05 seconds | 19.8% | 37.3% |
-| Red Hat 9 | Kernel Error | Kernel Error | Kernel Error |
-
-<li><span style="color:red">Red Hat Python output with Pandas stopped.</span></li>
-
-### **Spark efficiency evaluation.**
-#### **Tests were carried out on:**
-
-| Operating System | Runtime | CPU Usage | Memory Usage |
-|-------------------|---------------------|---------------|----------------|
-| Windows 10 | 86.69 seconds | 75.7% | 47.8% |
-| macOS Catalina | 181.68 seconds | 27.8% | 51.9% |
-| Red Hat 9 | Approx 120 seconds | Approx 36.66% | Approx 31% |
-
-<li><span style="color:red">Red Hat's result with Spark was approximate.</span></li>
-<li><span style="color:red">I only generate a graph and the service stopped.</span></li>
-<li><span style="color:red">Possibly the error with Red Hat 9 was due to its virtualization and restriction on the size of the virtual hard disk with 31 GB of space.</span></li>
-
-
-### **Technical Details and Execution Demonstration:**
-
-### - Windows 10
-- - 9th Gen 2.30 GHz i5 processor with 8 cores
-- - RAM memory 32 GB
-- - 1TB NVME Hard Drive
-
-#### Python with Win 10 pandas
-<img src="img/rp_win.png" width="600" height="400">
-
-#### Spark Win 10
-<img src="img/rs_win.png" width="600" height="400">
-
-### - Osx Catalina
-- - 5th Gen 1.7 GHz i5 processor with 2 cores
-- - RAM 16 GB
-- - 512GB SSD Hard Drive
-
-#### Python with Osx Catalina pandas
-<img src="img/rp_osx.png" width="600" height="400">
-
-#### Osx Catalina Spark
-<img src="img/rs_osx.png" width="600" height="400">
-
-### - Red Hat 9 (Virtual Machine in Virtual Box)
-- - 9th Gen 2.30 GHz i5 processor with 4 cores
-- - RAM 8 GB
-- - 31GB NVME Hard Drive
-
-#### Bug in Python with Red Hat 9 pandas
-<img src="img/rp_redh.png" width="600" height="400"> 
-
-#### Spark Red Hat 9
-<img src="img/rs_redh.png" width="600" height="400">
-
-#### Error in Spark Red Hat 9
-<img src="img/rs_redh-error.png" width="600" height="400">
-
-
-
-# 6. Conclusion
-
-The use and implementation of Big Data techniques for data analysis provides theoretical and technical knowledge with an understanding of the behavior of information and the potential it has to help solve real problems in society and/or in decision-making within public and private companies.  so the information is invaluable for companies in any productive sector.
-
-The development of the data analysis of the information provided, first of all had a global vision of the data and the relationship they have between them, which led to establish the type of attributes that related them and the line of services and/or products that the company uses this information. This gives you a more detailed understanding of the tasks that are going to be carried out and the results that are intended to be obtained.
-
-In the data analysis, a store of product services is established that are separated by departments and aisles, also the purchase orders that the customer tells us, the frequency and quantity of products for each daily purchase order, thus identifying the products that are purchased together, more frequently per day or per hour and by department,  The result can help companies develop more effective cross-selling strategies and optimize the design of their stores, both physical and online. At the same time, knowing the frequency of purchases by day and hour can help improve inventory management and staff scheduling, which in turn can lead to greater efficiency and cost savings.
-
-In the technical part of the data analysis, Python tools were used with Pandas and Spark, both are tools for data management and analysis, but they are used differently depending on the size of the data and the processing environment.
-
-Therefore, in the implementation of these techniques in this problem, the use of Python with Pandas had the following advantages:
-
-- Easy data handling.
-
-- Exploratory analysis of small and medium-scale data
-
-- Be able to work on a single computer with minimal technical requirements.
-
-And as disadvantages:
-
-- The limitation of analyzing massive data sets due to the computer's memory constraints.
-
-On the other hand, Spark is designed to be fast and handle large amounts of data distributed across nodes in a cluster, making it more suitable for very large data sets that do not fit in the computer's memory and that can be deployed in a cloud computing infrastructure (Amazon,  Azure, Google Cloud, etc.).
-
-In implementing Spark in this problem had advantages:
-
-- Data load time was faster.
-
-- Exploratory analysis improves processor performance.
-
-- Being able to increase the amount of information to really visualize its potential.
-
-And as disadvantages:
-
-- It is complicated in its coding, if you do not have previous knowledge of the programming language.
-
-- Data manipulation is more complex, going back to what was said in the previous point.
-
-- No plotting or graphing methods are explored.
-
-- Resource performance is not displayed since everything was executed on a single computer.
-
-
-
-# 7. References
-
-- Official Python documentation: https://docs.python.org/3/
-- Official Pandas documentation: https://pandas.pydata.org/docs/
-- Matplotlib Official Documentation: https://matplotlib.org/stable/contents.html
-- Official Apache Spark documentation: https://spark.apache.org/docs/latest/
-- Exploratory Data Analysis https://www.aprendemachinelearning.com/analisis-exploratorio-de-datos-pandas-python/
-- Concepts in Python https://www.geeksforgeeks.org
-- Doubts https://stackoverflow.com/questions/tagged/pandas+python
-- Data analysis https://ocw.uc3m.es/course/view.php?id=230
-- Data Dictionaries in Data Frame https://github.com/nsheikh23/COVID_StockMarket_Analysis/blob/master/52_Week.ipynb
-- Data frame processing in pandas https://barcelonageeks.com/eliminar-una-o-varias-columnas-de-pyspark-dataframe/
-- Data Clean https://github.com/mramshaw/Data-Cleaning
-- Data plotting https://github.com/tomimester/python-histogram/blob/master/plot-histogram-python-pandas.ipynb
-- Creating graphs with networkx https://ernestocrespo13.wordpress.com/2012/11/25/creacion-de-grafos-con-networkx-parte-1/
-- Data Analysis Techniques with PySpark https://github.com/sedaatalay/Sample-Data-Analysis-Techniques-with-PySpark
-
+As a person who watches Netflix regularly, this analysis was something that I expected, but also was surprised. For example, I did not know there were so many of Indian movies and shows, as I only watch shows and movies in english. Additionally, although Netflix started streaming from 2007, there were not many movies added at the time. Rather, a lot of movies were added later from 2015. This has been a fun analysis, and I'm looking towards watching more Netflix shows and movies!
